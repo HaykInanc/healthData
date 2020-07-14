@@ -3,65 +3,69 @@ import sqlite3
 class Db:
 
 	def __init__(self):
-		self.conn   = sqlite3.connect('database.db')
+		self.conn 	= sqlite3.connect('database.db')
 		self.cursor = self.conn.cursor()
 
+
+	'''
+	if_exists
+		rewrite - затереть если есть
+		skip - пропустить
+	'''
 
 	def init(self, if_exists='skip'):
 
 		if if_exists=='skip':
 			pass
-
-
 		elif if_exists=='rewrite':
-			self.cursor.execute('drop TABLE if exists customer')
-			self.cursor.execute('drop TABLE if exists sales')
-			self.cursor.execute('drop TABLE if exists good ')
-			self.cursor.execute('drop TABLE if exists discount')
-
-
+			self.cursor.execute('drop table if exists customer')		
+			self.cursor.execute('drop table if exists sales')		
+			self.cursor.execute('drop table if exists good')			
+			self.cursor.execute('drop table if exists discount')
 		else:
-			print('Такой команды нет, укажите skip или rewrite')
-			return
+			print('Такой команды нет, укажите (skip или rewrite)')
+			return 
+
 
 		self.cursor.execute('''
 				CREATE TABLE if not exists customer(
-				id INTEGER primary key autoincrement,
-				name VARCHAR(128),
-				gender BIT,
-				active_flg BIT default 1
-
+					id integer primary key autoincrement,
+					name varchar(128),
+					gender bit,
+					active_flg bit default 1
 				)
 				''')
-	
-		self.cursor.execute('''
-					CREATE TABLE if not exists sales (
-					id INTEGER primary key autoincrement,
-					good_id integer,
-					customer_id integer,
-					dttm datetime default current_timestamp
-					
-					)
-					''')
 
 		self.cursor.execute('''
-					CREATE TABLE if not exists good (
-					id INTEGER primary key autoincrement,
-					title varchar(128),
-					price integer,
-					start_dttm datetime default current_timestamp,
-					end_dttm   datetime default datetime('5555-12-31 23:59:59') 	
-					)
-					''')
-		
+			CREATE TABLE if not exists sales(
+				id integer primary key autoincrement,
+				good_id integer,
+				customer_id integer,
+				dttm datetime default current_timestamp
+			)
+			''')
+
 		self.cursor.execute('''
-					CREATE TABLE if not exists discount (
-					id INTEGER primary key autoincrement,
-					percent integer,
-					start_dttm datetime default current_timestamp,
-					end_dttm   datetime default datetime('5555-12-31 23:59:59') 	
-					)
-					''')
+			CREATE TABLE if not exists good(
+				id integer primary key autoincrement,
+				title varchar(128),
+				price integer,
+				start_dttm datetime default current_timestamp,
+				end_dttm   datetime default (datetime('5555-12-31 23:59:59'))
+			)
+			''')
+
+		self.cursor.execute('''
+			CREATE TABLE if not exists discount(
+				id integer primary key autoincrement,
+				percent integer,
+				start_dttm datetime default current_timestamp,
+				end_dttm   datetime default (datetime('5555-12-31 23:59:59'))
+			)
+			''')
+
 
 db = Db()
-db.init()
+db.init('rewrite')
+
+
